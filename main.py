@@ -39,7 +39,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- ĐỊNH NGHĨA HÀM TRƯỚC ---
-
+def get_connection():
+    return psycopg2.connect(
+        host=st.secrets["database"]["host"],
+        database=st.secrets["database"]["dbname"],
+        user=st.secrets["database"]["user"],
+        password=st.secrets["database"]["password"],
+        port=st.secrets["database"]["port"]
+    )
 def manage_test_mapping():
     st.subheader("🔗 Mapping Tên xét nghiệm từ máy")
     df_tests = db.get_all_tests()
@@ -2996,4 +3003,5 @@ with tabs[7]:
             
     elif pwd:
         st.error("Sai mật khẩu.")
+
         # Giao diện nút bấm trên Sidebar

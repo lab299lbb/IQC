@@ -4,7 +4,19 @@ import pandas as pd
 from datetime import datetime, date, timedelta
 
 import sqlite3
+import psycopg2
+import streamlit as st
 
+def get_connection():
+    return psycopg2.connect(
+        host=st.secrets["database"]["host"],
+        database=st.secrets["database"]["dbname"],
+        user=st.secrets["database"]["user"],
+        password=st.secrets["database"]["password"],
+        port=st.secrets["database"]["port"]
+    )
+
+# Sau đó dùng connection này để thực hiện các lệnh SQL như bình thường
 class DBManager:
     def __init__(self, db_path):
         self.db_path = db_path
@@ -772,5 +784,6 @@ class DBManager:
             
         conn.commit()
         conn.close()
+
 
     upgrade_database_for_pro_features()

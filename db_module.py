@@ -121,7 +121,41 @@ class DBManager:
             self.supabase.table("iqc_results").delete().eq("id", row_id).execute()
             return True
         except: return False
-
+    def get_iqc_data_continuous(self, test_id, max_months=None):
+        """
+        Lấy dữ liệu IQC liên tục của một xét nghiệm qua API Supabase.
+        Thực hiện Join bảng iqc_results và lots để lấy tên số Lô.
+        """
+        try:
+            # Truy vấn iqc_results và lấy thêm thông tin lot_number từ bảng lots (Foreign Key)
+            query = self.supabase.table("iqc_results") \
+                .select("*, lots(lot_number, test_id)") \
+                .eq("lots.test_id", test_id) \
+                .order("date", desc=False)
+            
+            # Nếu có giới hạn thời gian (ví dụ 3 tháng gần nhất)
+            if max_months:
+                from datetime import datetime, timedelta
+                start_date = (datetime.now() - timedelta(days=max_months * 30)).strftime('%Y-%m-%d')
+                query = query.gte("date", start_date)
+            
+            response = query.execute()
+            
+            if not response.data:
+                return pd.DataFrame()
+                
+            df = pd.DataFrame(response.data)
+            
+            # Xử lý dữ liệu lồng nhau từ Supabase (lots: {lot_number: '...' }) thành cột phẳng
+            if 'lots' in df.columns:
+                df['lot_number'] = df['lots'].apply(lambda x: x['lot_number'] if isinstance(x, dict) else None)
+                # Xóa cột lots cũ để tránh nhầm lẫn
+                df = df.drop(columns=['lots'])
+                
+            return df
+        except Exception as e:
+            print(f"Lỗi get_iqc_data_continuous: {e}")
+            return pd.DataFrame()
     # --- QUẢN LÝ MAPPING ---
     def add_mapping(self, test_id, external_name):
         data = {"test_id": test_id, "external_name": external_name}
@@ -165,6 +199,7 @@ class DBManager:
             self.supabase.table("settings").upsert({"key": key, "value": str(value)}).execute()
             return True
         except: return False
+
 
 
 

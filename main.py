@@ -1399,6 +1399,12 @@ with st.sidebar.expander("🗑️ Xóa Test (NGUY HIỂM)"):
 st.sidebar.markdown("---")
 st.sidebar.subheader("📦 Cấu hình Lot Đang Chạy")
 
+# 1. Khởi tạo giá trị mặc định để tránh NameError
+all_lots = pd.DataFrame() 
+
+# 2. Gọi hàm lấy dữ liệu từ db_module
+if 'selected_test_id' in locals() or 'selected_test_id' in globals():
+    all_lots = db.get_lots_for_test(selected_test_id)
 # Lấy dữ liệu và phân loại
 if not all_lots.empty and 'level' in all_lots.columns:
     lots_l1 = all_lots[all_lots['level'] == 1]
@@ -3001,6 +3007,7 @@ with tabs[7]:
         st.error("Sai mật khẩu.")
 
         # Giao diện nút bấm trên Sidebar
+
 
 
 

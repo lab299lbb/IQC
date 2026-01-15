@@ -195,7 +195,14 @@ class DBManager:
         if not df.empty:
             df['internal_name'] = df['tests'].apply(lambda x: x['name'] if x else None)
         return df
-
+    def delete_mapping(self, mapping_id):
+        """Xóa một dòng ánh xạ (mapping) dựa trên ID"""
+        try:
+            self.supabase.table("name_mapping").delete().eq("id", mapping_id).execute()
+            return True
+        except Exception as e:
+            st.error(f"Lỗi khi xóa mapping: {e}")
+            return False
     # --- QUẢN LÝ EQA ---
     def add_eqa(self, data):
         try:
@@ -222,6 +229,7 @@ class DBManager:
             self.supabase.table("settings").upsert({"key": key, "value": str(value)}).execute()
             return True
         except: return False
+
 
 
 

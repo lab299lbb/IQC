@@ -77,7 +77,19 @@ class DBManager:
     def get_lots_for_test(self, test_id):
         response = self.supabase.table("lots").select("*").eq("test_id", test_id).order("id", desc=True).execute()
         return pd.DataFrame(response.data)
-
+    def get_lots_for_test(self, test_id):
+        try:
+            response = self.supabase.table("lots").select("*").eq("test_id", test_id).order("id", desc=True).execute()
+            df = pd.DataFrame(response.data)
+            
+            # Nếu DataFrame trống, tạo các cột rỗng để tránh lỗi KeyError ở main.py
+            if df.empty:
+                return pd.DataFrame(columns=['id', 'test_id', 'lot_number', 'level', 'method', 'expiry_date', 'mean', 'sd'])
+            
+            return df
+        except Exception as e:
+            st.error(f"Lỗi truy vấn Lots: {e}")
+            return pd.DataFrame(columns=['id', 'test_id', 'lot_number', 'level', 'method', 'expiry_date', 'mean', 'sd'])
     # --- QUẢN LÝ IQC RESULTS ---
     def add_iqc_data(self, lot_id, dt, level, value, note):
         try:
@@ -150,5 +162,6 @@ class DBManager:
             self.supabase.table("settings").upsert({"key": key, "value": str(value)}).execute()
             return True
         except: return False
+
 
 

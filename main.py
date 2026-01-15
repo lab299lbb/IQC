@@ -1399,25 +1399,22 @@ with st.sidebar.expander("🗑️ Xóa Test (NGUY HIỂM)"):
 st.sidebar.markdown("---")
 st.sidebar.subheader("📦 Cấu hình Lot Đang Chạy")
 
-# 1. Khởi tạo giá trị mặc định để tránh NameError
-all_lots = pd.DataFrame() 
+# 1. Khởi tạo tất cả các biến mức QC là rỗng
+lots_l1 = pd.DataFrame()
+lots_l2 = pd.DataFrame()
+lots_l3 = pd.DataFrame()
 
-# 2. Gọi hàm lấy dữ liệu từ db_module
-if 'selected_test_id' in locals() or 'selected_test_id' in globals():
-    all_lots = db.get_lots_for_test(selected_test_id)
-# Lấy dữ liệu và phân loại
-if not all_lots.empty and 'level' in all_lots.columns:
-    lots_l1 = all_lots[all_lots['level'] == 1]
-    lots_l2 = all_lots[all_lots['level'] == 2]
-    lots_l3 = all_lots[all_lots['level'] == 3]
-else:
-    lots_l1 = pd.DataFrame()
-    lots_l2 = pd.DataFrame()
-    st.info("Chưa có dữ liệu Lô (Lot) cho xét nghiệm này.")
-# Tạo dict để selectbox
-opts_l1 = {f"{r['lot_number']} (Hạn:{r['expiry_date']})": r.to_dict() for _, r in lots_l1.iterrows()}
-opts_l2 = {f"{r['lot_number']} (Hạn:{r['expiry_date']})": r.to_dict() for _, r in lots_l2.iterrows()}
-opts_l3 = {f"{r['lot_number']} (Hạn:{r['expiry_date']})": r.to_dict() for _, r in lots_l3.iterrows()}
+# 2. Lấy dữ liệu (Giả sử bạn đã có all_lots từ db.get_lots_for_test)
+if 'all_lots' in locals() and not all_lots.empty:
+    if 'level' in all_lots.columns:
+        lots_l1 = all_lots[all_lots['level'] == 1]
+        lots_l2 = all_lots[all_lots['level'] == 2]
+        lots_l3 = all_lots[all_lots['level'] == 3]
+
+# 3. Khởi tạo dictionary cho selectbox (Dòng 1420 của bạn sẽ an toàn hơn)
+opts_l1 = {f"{r['lot_number']} (Hạn:{r['expiry_date']})": r.to_dict() for _, r in lots_l1.iterrows()} if not lots_l1.empty else {}
+opts_l2 = {f"{r['lot_number']} (Hạn:{r['expiry_date']})": r.to_dict() for _, r in lots_l2.iterrows()} if not lots_l2.empty else {}
+opts_l3 = {f"{r['lot_number']} (Hạn:{r['expiry_date']})": r.to_dict() for _, r in lots_l3.iterrows()} if not lots_l3.empty else {}
 
 # --- SELECTBOX CHỌN LOT ĐANG CHẠY ---
 s_l1 = st.sidebar.selectbox("Lot Level 1:", ["-- Chọn L1 --"] + list(opts_l1.keys()))
@@ -3007,6 +3004,7 @@ with tabs[7]:
         st.error("Sai mật khẩu.")
 
         # Giao diện nút bấm trên Sidebar
+
 
 
 

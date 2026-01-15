@@ -52,15 +52,23 @@ class DBManager:
             return True
         except: return False
 
-    def update_test_info(self, test_id, name, unit, tea, device, cvi, cvg):
+    def update_test(self, test_id, name, unit, device, tea, cvi, cvg):
+        """Cập nhật thông tin xét nghiệm bao gồm cả TEa, CVi, CVg lên Supabase"""
         data = {
-            "name": name, "unit": unit, "tea": tea, 
-            "device": device, "cvi": cvi, "cvg": cvg
+            "name": name,
+            "unit": unit,
+            "device": device,
+            "tea": float(tea) if tea else 0.0,
+            "cvi": float(cvi) if cvi else 0.0,
+            "cvg": float(cvg) if cvg else 0.0
         }
         try:
+            # Thực hiện cập nhật dòng có ID tương ứng
             self.supabase.table("tests").update(data).eq("id", test_id).execute()
             return True
-        except: return False
+        except Exception as e:
+            st.error(f"Lỗi cập nhật xét nghiệm: {e}")
+            return False
 
     # --- QUẢN LÝ LOTS ---
     def add_lot(self, test_id, lot_number, level, method, expiry_date, mean, sd):
@@ -199,6 +207,7 @@ class DBManager:
             self.supabase.table("settings").upsert({"key": key, "value": str(value)}).execute()
             return True
         except: return False
+
 
 
 

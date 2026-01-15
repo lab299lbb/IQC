@@ -1400,11 +1400,14 @@ st.sidebar.markdown("---")
 st.sidebar.subheader("📦 Cấu hình Lot Đang Chạy")
 
 # Lấy dữ liệu và phân loại
-all_lots = db.get_lots_for_test(current_test['id'])
-lots_l1 = all_lots[all_lots['level'] == 1]
-lots_l2 = all_lots[all_lots['level'] == 2]
-lots_l3 = all_lots[all_lots['level'] == 3]
-
+if not all_lots.empty and 'level' in all_lots.columns:
+    lots_l1 = all_lots[all_lots['level'] == 1]
+    lots_l2 = all_lots[all_lots['level'] == 2]
+    lots_l3 = all_lots[all_lots['level'] == 3]
+else:
+    lots_l1 = pd.DataFrame()
+    lots_l2 = pd.DataFrame()
+    st.info("Chưa có dữ liệu Lô (Lot) cho xét nghiệm này.")
 # Tạo dict để selectbox
 opts_l1 = {f"{r['lot_number']} (Hạn:{r['expiry_date']})": r.to_dict() for _, r in lots_l1.iterrows()}
 opts_l2 = {f"{r['lot_number']} (Hạn:{r['expiry_date']})": r.to_dict() for _, r in lots_l2.iterrows()}
@@ -2998,5 +3001,6 @@ with tabs[7]:
         st.error("Sai mật khẩu.")
 
         # Giao diện nút bấm trên Sidebar
+
 
 

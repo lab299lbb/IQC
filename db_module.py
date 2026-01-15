@@ -3,18 +3,30 @@ import sqlite3
 import pandas as pd
 from datetime import datetime, date, timedelta
 
-import sqlite3
-import psycopg2
 import streamlit as st
+from supabase import create_client
+import pandas as pd
 
-def get_connection():
-    return psycopg2.connect(
-        host=st.secrets["database"]["host"],
-        database=st.secrets["database"]["dbname"],
-        user=st.secrets["database"]["user"],
-        password=st.secrets["database"]["password"],
-        port=st.secrets["database"]["port"]
-    )
+class DBManager:
+    def __init__(self):
+        # Kết nối qua HTTP API thay vì Port 5432
+        url = st.secrets["supabase"]["url"]
+        key = st.secrets["supabase"]["key"]
+        self.supabase = create_client(url, key)
+
+    def get_data(self, table_name):
+        # Hàm lấy toàn bộ dữ liệu từ một bảng
+        response = self.supabase.table(table_name).select("*").execute()
+        return pd.DataFrame(response.data)
+
+    def insert_data(self, table_name, data_dict):
+        # Hàm thêm dữ liệu (data_dict là dictionary ví dụ: {"name": "Test A", "value": 10})
+        return self.supabase.table(table_name).insert(data_dict).execute()
+
+    def query_custom(self, table_name, column, value):
+        # Hàm lọc dữ liệu đơn giản
+        response = self.supabase.table(table_name).select("*").eq(column, value).execute()
+        return pd.DataFrame(response.data)
 
 # Sau đó dùng connection này để thực hiện các lệnh SQL như bình thường
 class DBManager:
@@ -787,3 +799,4 @@ class DBManager:
 
 
     upgrade_database_for_pro_features()
+

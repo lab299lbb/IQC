@@ -9,3 +9,4 @@ scipy
 streamlit
 psycopg2-binary
 sqlalchemy
+openpyxl.

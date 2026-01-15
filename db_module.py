@@ -90,10 +90,13 @@ class DBManager:
                 "lot_id": lot_id, "date": d_str, 
                 "value": value, "level": level, "note": note
             }
-            self.supabase.table("iqc_results").insert(data).execute()
+            # Thêm biến result để kiểm tra
+            result = self.supabase.table("iqc_results").insert(data).execute()
             return True
-        except: return False
-
+        except Exception as e:
+            # Dòng này cực kỳ quan trọng: Nó sẽ hiện lỗi thật sự lên App
+            st.error(f"Lỗi Supabase Insert: {e}")
+            return False
     def get_iqc_data_by_lot(self, lot_id):
         response = self.supabase.table("iqc_results").select("*").eq("lot_id", lot_id).order("date", desc=True).execute()
         return pd.DataFrame(response.data)
@@ -147,4 +150,5 @@ class DBManager:
             self.supabase.table("settings").upsert({"key": key, "value": str(value)}).execute()
             return True
         except: return False
+
 

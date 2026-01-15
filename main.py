@@ -28,7 +28,7 @@ from db_module import DBManager
 #st.success("Bản quyền hợp lệ. Chào mừng bạn!")
 # --- CẤU HÌNH ---
 st.set_page_config(page_title="QLCL Phòng Xét Nghiệm", layout="wide", page_icon="🔬")
-db = DBManager("lab_data.db")
+db = DBManager()
 
 # --- STYLE CSS TÙY CHỈNH ---
 st.markdown("""
@@ -39,30 +39,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- ĐỊNH NGHĨA HÀM TRƯỚC ---
-import streamlit as st
-import psycopg2
 
-def check_connection():
-    try:
-        # Thử tạo kết nối từ Secrets
-        conn = psycopg2.connect(
-            host=st.secrets["database"]["host"],
-            database=st.secrets["database"]["dbname"],
-            user=st.secrets["database"]["user"],
-            password=st.secrets["database"]["password"],
-            port=st.secrets["database"]["port"]
-        )
-        conn.close()
-        return True
-    except Exception as e:
-        st.error(f"Lỗi kết nối Database: {e}")
-        return False
-
-# Hiển thị trạng thái trên giao diện Streamlit
-if check_connection():
-    st.success("✅ Kết nối Supabase thành công!")
-else:
-    st.warning("❌ Chưa kết nối được Database. Vui lòng kiểm tra lại Secrets.")
 def manage_test_mapping():
     st.subheader("🔗 Mapping Tên xét nghiệm từ máy")
     df_tests = db.get_all_tests()
@@ -3021,4 +2998,5 @@ with tabs[7]:
         st.error("Sai mật khẩu.")
 
         # Giao diện nút bấm trên Sidebar
+
 

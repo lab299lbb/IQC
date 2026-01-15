@@ -41,7 +41,22 @@ class DBManager:
     # --- QUẢN LÝ TESTS ---
     def get_all_tests(self):
         return self.get_data("tests")
-
+    def get_test_by_name(self, name):
+        """
+        Tìm kiếm thông tin xét nghiệm dựa trên tên (name).
+        Trả về Dictionary chứa thông tin xét nghiệm hoặc None nếu không tìm thấy.
+        """
+        try:
+            # Truy vấn bảng tests, lọc theo cột name
+            response = self.supabase.table("tests").select("*").eq("name", name).execute()
+            
+            # Nếu tìm thấy kết quả, trả về bản ghi đầu tiên
+            if response.data and len(response.data) > 0:
+                return response.data[0]
+            return None
+        except Exception as e:
+            print(f"Lỗi khi tìm xét nghiệm theo tên: {e}")
+            return None
     def add_test(self, name, unit, tea, device, cvi=0, cvg=0):
         data = {
             "name": name, "unit": unit, "tea": tea, 
@@ -207,6 +222,7 @@ class DBManager:
             self.supabase.table("settings").upsert({"key": key, "value": str(value)}).execute()
             return True
         except: return False
+
 
 
 

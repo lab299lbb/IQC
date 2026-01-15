@@ -24,7 +24,20 @@ class DBManager:
         except Exception as e:
             print(f"Lỗi lấy dữ liệu {table_name}: {e}")
             return pd.DataFrame()
-
+    def get_all_devices(self):
+        """Lấy danh sách các thiết bị (máy xét nghiệm) duy nhất từ bảng tests"""
+        try:
+            # Lấy cột device từ bảng tests
+            response = self.supabase.table("tests").select("device").execute()
+            if response.data:
+                df = pd.DataFrame(response.data)
+                # Loại bỏ giá trị trống và trùng lặp, sau đó sắp xếp
+                devices = df['device'].dropna().unique().tolist()
+                return sorted([d for d in devices if str(d).strip() != ""])
+            return []
+        except Exception as e:
+            print(f"Lỗi lấy danh sách thiết bị: {e}")
+            return []
     # --- QUẢN LÝ TESTS ---
     def get_all_tests(self):
         return self.get_data("tests")
@@ -134,3 +147,4 @@ class DBManager:
             self.supabase.table("settings").upsert({"key": key, "value": str(value)}).execute()
             return True
         except: return False
+

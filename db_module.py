@@ -95,8 +95,13 @@ class DBManager:
         except: return False
 
     def get_all_tests(self):
-        res = self.supabase.table("tests").select("*").execute()
-        return pd.DataFrame(res.data)
+        try:
+            # Gọi đúng cột 'id' và 'name' theo ảnh bạn gửi
+            res = self.supabase.table("tests").select("id, name").execute()
+            return pd.DataFrame(res.data)
+        except Exception as e:
+            print(f"Lỗi: {e}")
+            return pd.DataFrame()
 
     def update_test_info(self, test_id, name, unit, tea, device, cvi, cvg):
         try:
@@ -456,6 +461,7 @@ class DBManager:
 
     def upgrade_database_for_pro_features(self):
         pass
+
 
 
 

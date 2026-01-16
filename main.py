@@ -1359,10 +1359,13 @@ st.sidebar.subheader("✏️ Thao tác Test Đã Chọn")
 with st.sidebar.expander(f"⚙️ Sửa Test: {current_test['name']}"):
     with st.form("edit_test_form"):
         st.write("Chỉnh sửa thông tin Test/Thiết bị")
-        
+
         # Nhập liệu thông tin cũ
         n_e = st.text_input("Tên Test", value=current_test['name'])
-        u_e = st.text_input("Đơn vị", value=current_test['unit'])
+        # Cách 1: Kiểm tra trực tiếp tên cột trong dataframe
+        # Thay vì current_test['unit'], hãy dùng .get() để tránh sập app nếu thiếu cột
+        unit_value = current_test.get('unit', '') 
+        u_e = st.text_input("Đơn vị", value=unit_value)
         d_e = st.text_input("Thiết bị", value=current_test['device'])
         tea_e = st.number_input("TEa%", value=float(current_test['tea']), format="%.2f")
         
@@ -3004,6 +3007,7 @@ with tabs[7]:
         st.error("Sai mật khẩu.")
 
         # Giao diện nút bấm trên Sidebar
+
 
 
 

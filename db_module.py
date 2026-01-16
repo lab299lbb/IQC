@@ -123,8 +123,19 @@ class DBManager:
         except: return False
 
     def get_lots_for_test(self, test_id):
-        # Dòng res và print phải thẳng hàng tuyệt đối
-        res = self.supabase.table("lots").select("*").eq("test_id", test_id).order("id", desc=True).execute()
+        # Lấy danh sách xét nghiệm
+        df_tests = db.get_all_tests()
+        # Tạo selectbox hiển thị tên nhưng lưu giá trị là ID
+        selected_test_name = st.selectbox("Chọn xét nghiệm", df_tests['name'].unique())
+        selected_test_id = df_tests[df_tests['name'] == selected_test_name]['id'].values[0]
+        
+        # Dùng ID này để lấy Lot
+        df_lots = db.get_lots_for_test(selected_test_id)
+        
+        if not df_lots.empty:
+            selected_lot = st.selectbox("Chọn Lot", df_lots['lot_number'].unique())
+        else:
+            st.warning("Xét nghiệm này chưa có dữ liệu Lot!")
         
         # Dòng debug này giúp bạn kiểm tra xem Supabase có trả về dữ liệu hay không
         print(f"DEBUG: Đang tìm Lot cho Test ID: {test_id}, Kết quả: {res.data}")
@@ -461,6 +472,7 @@ class DBManager:
 
     def upgrade_database_for_pro_features(self):
         pass
+
 
 
 

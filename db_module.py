@@ -96,13 +96,13 @@ class DBManager:
 
     def get_all_tests(self):
         try:
-            # Gọi đúng cột 'id' và 'name' theo ảnh bạn gửi
-            res = self.supabase.table("tests").select("id, name").execute()
+            # Lấy tất cả các cột để đảm bảo có 'unit', 'device', 'method'...
+            res = self.supabase.table("tests").select("*").execute() 
             return pd.DataFrame(res.data)
         except Exception as e:
-            print(f"Lỗi: {e}")
+            st.error(f"Lỗi truy vấn danh sách xét nghiệm: {e}")
             return pd.DataFrame()
-
+        
     def update_test_info(self, test_id, name, unit, tea, device, cvi, cvg):
         try:
             data = {"name": name, "unit": unit, "tea": tea, "device": device, "cvi": cvi, "cvg": cvg}
@@ -472,6 +472,7 @@ class DBManager:
 
     def upgrade_database_for_pro_features(self):
         pass
+
 
 
 

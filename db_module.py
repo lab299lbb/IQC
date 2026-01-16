@@ -119,6 +119,7 @@ def get_setting(self, key, default=None):
 
     def get_lots_for_test(self, test_id):
         res = self.supabase.table("lots").select("*").eq("test_id", test_id).order("id", desc=True).execute()
+        print(f"DEBUG: Đang tìm Lot cho Test ID: {test_id}, Kết quả: {res.data}")
         return pd.DataFrame(res.data)
 
     def update_lot_params(self, lot_id, lot_number, method, expiry_date, mean, sd):
@@ -451,6 +452,7 @@ def get_setting(self, key, default=None):
 
     def upgrade_database_for_pro_features(self):
         pass
+
 
 
 

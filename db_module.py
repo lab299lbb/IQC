@@ -118,8 +118,12 @@ def get_setting(self, key, default=None):
         except: return False
 
     def get_lots_for_test(self, test_id):
+        # Dòng res và print phải thẳng hàng tuyệt đối
         res = self.supabase.table("lots").select("*").eq("test_id", test_id).order("id", desc=True).execute()
+        
+        # Dòng debug này giúp bạn kiểm tra xem Supabase có trả về dữ liệu hay không
         print(f"DEBUG: Đang tìm Lot cho Test ID: {test_id}, Kết quả: {res.data}")
+        
         return pd.DataFrame(res.data)
 
     def update_lot_params(self, lot_id, lot_number, method, expiry_date, mean, sd):
@@ -452,6 +456,7 @@ def get_setting(self, key, default=None):
 
     def upgrade_database_for_pro_features(self):
         pass
+
 
 
 

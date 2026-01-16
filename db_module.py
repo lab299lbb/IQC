@@ -14,7 +14,7 @@ class DBManager:
             self.supabase = create_client(self.url, self.key)
         except Exception as e:
             st.error(f"Lỗi cấu hình Secrets: {e}")
-def get_setting(self, key, default=None):
+    def get_setting(self, key, default=None):
         try:
             response = self.supabase.table("settings").select("value").eq("key", key).execute()
             if response.data:
@@ -456,6 +456,7 @@ def get_setting(self, key, default=None):
 
     def upgrade_database_for_pro_features(self):
         pass
+
 
 
 
